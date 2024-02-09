@@ -3,20 +3,19 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const tweetValidation = require('../../validations/tweet.validation');
 const tweetController = require('../../controllers/tweet.controller');
+const paginate = require('../../models/plugins/paginate.plugin')
+
 const router = express.Router();
-
-router
-  .route('/')
-  .post(auth('createTweets'), validate(tweetValidation.createTweet), tweetController.createTweet)
-
-
-
 /**
 * @swagger
 * tags:
 *   name: Tweets
 *   description: Tweet management and retrieval
 */
+
+router
+  .route('/')
+  .post(auth('createTweets'), validate(tweetValidation.createTweet), tweetController.createTweet)
 
 /**
 * @swagger
@@ -91,8 +90,8 @@ router
 *                mentions: []
 *                hashtags: []
 *                visibility: 'EVERYONE'
-*                replyTo: " "  # tweetId of the tweet being replied to
-*                quoteTo: " "  # tweetId of the tweet being quoted
+*                replyTo: ' '  # tweetId of the tweet being replied to
+*                quoteTo: ' '  # tweetId of the tweet being quoted
 *                repliesCount: 10
 *                likes:
 *                  - id: 123
@@ -115,5 +114,46 @@ router
 *         $ref: '#/components/responses/Forbidden'
 *
 */
+
+router
+  .route('/search/recent')
+  .get(auth('createTweets'), paginate, tweetController.getSearchTweets);
+
+  
+  
+router
+  .route('/trending/keywords')
+  .get(auth('createTweets'), paginate, tweetController.getTrendingKeywords);
+
+router
+  .route('/trending/content')
+  .get(auth('createTweets'), paginate, tweetController.getTrendingTweets);
+
+router
+  .route('/:tweetId')
+  .get(auth('createTweets'), tweetController.getTweet)
+  .delete(auth('createTweets'), tweetController.deleteTweet);
+
+router
+  .route("/:tweetId/engagement")
+  .get(auth('createTweets'), paginate, tweetController.getTweetEngagement);
+
+router
+  .route("/:tweetId/repost")
+  .post(auth('createTweets'), paginate, tweetController.createRepost);
+
+router
+  .route("/:tweetId/like")
+  .post(auth('createTweets'), paginate, tweetController.likeTweet);
+
+router
+  .route("/:tweetId/repost")
+  .delete(auth('createTweets'), paginate, tweetController.deleteRepost);
+
+router
+  .route("/:tweetId/like")
+  .delete(auth('createTweets'), paginate, tweetController.unlikeTweet);
+
+
 
 module.exports = router;
