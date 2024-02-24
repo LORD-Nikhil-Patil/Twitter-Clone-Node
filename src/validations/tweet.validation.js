@@ -26,6 +26,16 @@ const createTweet = {
     }),
 };
 
+const getTweets = {
+    query: Joi.object().keys({
+        search: Joi.string(),
+        sortBy: Joi.number().integer(),
+        limit: Joi.number().integer(),
+        page: Joi.number().integer(),
+    }),
+}
+
 module.exports = {
-    createTweet
+    createTweet,
+    getTweets
 }

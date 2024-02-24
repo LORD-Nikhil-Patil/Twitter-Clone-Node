@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { toJSON } = require('./plugins');
+const { toJSON, paginate } = require('./plugins');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const tweetSchema = new mongoose.Schema(
@@ -77,6 +77,10 @@ const tweetSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+  // add plugin that converts mongoose to json
+  tweetSchema.plugin(toJSON);
+  tweetSchema.plugin(paginate);
 
 // add plugin that converts mongoose to json
 tweetSchema.methods.updateRepliesCount = async function () {

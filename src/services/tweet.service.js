@@ -4,6 +4,7 @@ const {
     userTweetSelector,
     postDetailSelector
 } = require("../helpers/selectors");
+const paginate = require('../models/plugins/paginate.plugin')
 
 const createTweet = async (data) => {
     const newTweet = await new Tweet(data).save()
@@ -45,58 +46,9 @@ const fetchById = async (tweetId) => {
     return tweet;
 };
 
-const fetchByQuery = async (query, options) => {
-    return await paginate(
-        "Tweet",
-        [
-            { $unwind: '$hashtags' },
-            {
-                $match: {
-                    $or: [
-                        { hashtags: { $regex: query } },
-                        { content: { $regex: query } }
-                    ]
-                }
-            },
-
-            {
-                $group: {
-                    _id: '$_id',
-                    uniqueData: { $first: '$$ROOT' }
-                },
-
-            },
-
-            {
-                $replaceRoot: { newRoot: '$uniqueData' }
-            },
-
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "author",
-                    foreignField: "_id",
-                    as: "author",
-                },
-            },
-
-            {
-                $unwind: {
-                    path: "$author",
-                    preserveNullAndEmptyArrays: true,
-                }
-            },
-
-
-
-            {
-                $project: {
-                    ...userTweetSelector
-                }
-            }
-        ],
-        options
-    )
+const fetchByQuery = async (filter, options) => {
+    const tweets = await Tweet.paginate(filter, options);
+    return tweets;
 }
 
 const fetchReplies = async (tweetId, options) => {

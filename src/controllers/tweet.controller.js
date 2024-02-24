@@ -200,13 +200,13 @@ const getTweetEngagement = catchAsync(async (req, res, next) => {
 });
 
 const getSearchTweets = catchAsync(async (req, res, next) => {
-    const { query: searchQuery } = req.query;
-
-    if (!searchQuery)
+    const { search } = req.query;
+    if (!search)
        throw new ApiError(httpStatus.BAD_REQUEST, 'No query provided!')
-
-    const searchRegex = new RegExp(searchQuery, 'i');
-    const response = await tweetService.fetchByQuery(searchRegex, req.pagination);
+    
+    const filter = pick(req.query, ['search']);
+    const options = pick(req.query, ['sortBy', 'limit', 'page']);
+    const response = await tweetService.fetchByQuery(filter, options);
 
     return res.status(200).json(response);
 

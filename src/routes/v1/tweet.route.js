@@ -7,15 +7,15 @@ const paginate = require('../../models/plugins/paginate.plugin')
 
 const router = express.Router();
 /**
-* @swagger
-* tags:
-*   name: Tweets
-*   description: Tweet management and retrieval
-*/
+ * @swagger
+ * tags:
+ *   name: Tweets
+ *   description: Tweet management and retrieval
+ */
 
 router
   .route('/')
-  .post(auth('createTweets'), validate(tweetValidation.createTweet), tweetController.createTweet)
+  .post(auth('createTweets'), validate(tweetValidation.createTweet), tweetController.createTweet);
 
 /**
 * @swagger
@@ -117,10 +117,51 @@ router
 
 router
   .route('/search/recent')
-  .get(auth('createTweets'), paginate, tweetController.getSearchTweets);
+  .get(auth('createTweets'), validate(tweetValidation.getTweets), tweetController.getSearchTweets);
 
-  
-  
+/**
+* @swagger
+* /tweets/search/recent:
+*   get:
+*     summary: Get Tweets
+*     description: Search all tweet.
+*     tags:
+*       - Tweets
+*     security:
+*       - bearerAuth: []
+*     consumes:
+*       - application/json
+*     produces:
+*       - application/json
+*     parameters:  
+*       - in: query
+*         name: search
+*         schema:
+*           type: string
+*         description: Query string
+*       - in: query
+*         name: sortBy
+*         schema:
+*           type: string
+*         description: sort by query in the form of field:desc/asc (ex. name:asc)
+*       - in: query
+*         name: limit
+*         schema:
+*           type: integer
+*           minimum: 1
+*         default: 10
+*         description: Maximum number of users
+*       - in: query
+*         name: page
+*         schema:
+*           type: integer
+*           minimum: 1
+*           default: 1
+*         description: Page number  
+*     
+*/
+
+
 router
   .route('/trending/keywords')
   .get(auth('createTweets'), paginate, tweetController.getTrendingKeywords);
